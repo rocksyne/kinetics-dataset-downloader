@@ -41,7 +41,6 @@ https://www.ostechnix.com/20-ffmpeg-commands-beginners/
 import os, sys
 from tqdm import tqdm as tqdm
 import shutil
-from pytube import YouTube
 
 
 # Class begins
@@ -127,7 +126,7 @@ class KineticsDatasetManager(object):
 			lines = lines[1:]
 			sp = "./"
 
-			# loop through the lines to downlad the video
+			# loop through the lines to download the video
 			for line in tqdm(lines):
 				coumn = str(line).split(",")
 
