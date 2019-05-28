@@ -41,9 +41,11 @@ Command Line Parameters
 * `-d`: Final destintion where all videos should be dwonloaded to saved. A directory is automatically created in this destination folder according to the parameter of `-t`
 
 From the above exampple, the final destination folder may look like
-- ~/Documents/Kinetics_dataset
+```
+ - ~/Documents/Kinetics_dataset
  -- train
  -- validate
  -- test
  -- holdout
+```
  
