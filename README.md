@@ -4,7 +4,7 @@ Kinetics-600 is a large-scale high-quality dataset of YouTube video URLs which i
 
 ## Warning! This scrip is not without bugs!
 
-This script downloads the manage Kinetics-600 dataset according to author guidelines (https://arxiv.org/pdf/1705.06950.pdf). This script downloads only a 10 second clip using the provided youtube video ID.
+This script downloads the Kinetics-600 dataset according to author guidelines (https://arxiv.org/pdf/1705.06950.pdf). This script downloads only a 10 second clip using the provided youtube video ID.
 
 # Pre-requisites ( dependencies )
 
