@@ -42,10 +42,10 @@ Command Line Parameters
 
 From the above exampple, the final destination folder may look like
 ```
- ~/Documents/Kinetics_dataset
-   -- train
-   -- validate
-   -- test
-   -- holdout
+ |~/Documents/Kinetics_dataset
+   |-- train
+   |-- validate
+   |-- test
+   |-- holdout
 ```
  
