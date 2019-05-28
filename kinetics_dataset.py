@@ -27,9 +27,7 @@ Authors:	Rockson Agyeman and Gyu Sang Choi
 Date: 		2019.05.23
 Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
 Version:	1.0.0
-Purpose:	Manage splitting of HMDM51 according to author guidelines
-
-* Download dataset from http://serre-lab.clps.brown.edu/resource/hmdb-a-large-human-motion-database/#Downloads
+Purpose:	Download Kinetics-600 dataset according to the author guidelines
 """
 
 import argparse
