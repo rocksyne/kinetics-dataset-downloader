@@ -2,11 +2,11 @@
 
 Kinetics-600 is a large-scale high-quality dataset of YouTube video URLs which include a diverse range of human focused actions.
 
-# Warning! This scrip is not without bugs!
+# Warn·ing! This scrip is not without bugs!
 
 This script downloads the Kinetics-600 dataset according to author guidelines (https://arxiv.org/pdf/1705.06950.pdf). This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube.
 
-# Prerequisites ( dependencies )
+# Pre·req·ui·sites ( dependencies )
 
 - [X] Environment: Ubuntu 16.04 (This is some-what irrelevant but worth mentioning)
 
@@ -30,7 +30,7 @@ sudo apt-get update
 sudo apt-get install ffmpeg
 ```
 
-# Usage
+# Us·age
 ```
 python kinetics_dataset.py -t [data_set_categoty] -d [destination_to_where_videos_should_be_downloaded_to]
 ```
