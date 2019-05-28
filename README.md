@@ -13,26 +13,32 @@ This script downloads the manage Kinetics-600 dataset according to author guidel
 ### Python 3
 
 ### tqdm
+```
 pip3 install tqdm
+```
 
 ### youtube-dl
+```
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
 sudo chmod a+rx /usr/local/bin/youtube-dl
+```
 
 ### ffmpeg
+```
 sudo add-apt-repository ppa:jonathonf/ffmpeg-4
 sudo apt-get update
 sudo apt-get install ffmpeg
-
+```
 
 # Usage
+```
 python kinetics_dataset.py -t [data_set_categoty] -d [destination_to_where_videos_should_be_downloaded_to]
-
+```
 eg. python kinetics_dataset.py -t train -d ~/Documents/Kinetics_dataset
 
 Command Line Parameters
--t: Type of dataset category to be downloaded, such as train, validate, test and holdout
--d: Final destintion where all videos should be dwonloaded to saved. A directory is automatically created in this destination folder according to the parameter of -t
+* `-t`: Type of dataset category to be downloaded, such as train, validate, test and holdout
+* `-d`: Final destintion where all videos should be dwonloaded to saved. A directory is automatically created in this destination folder according to the parameter of `-t`
 
 From the above exampple, the final destination folder may look like
 - ~/Documents/Kinetics_dataset
