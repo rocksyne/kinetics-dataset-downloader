@@ -12,7 +12,7 @@ This script downloads the manage Kinetics-600 dataset according to author guidel
 
 ### Python 3
 
-- [X] ### tqdm
+### - [X]  tqdm
 - [ ] ### tqdm
 ```
 pip3 install tqdm
