@@ -8,23 +8,22 @@ This script downloads the manage Kinetics-600 dataset according to author guidel
 
 # Pre-requisites ( dependencies )
 
-### Environment: Ubuntu 16.04 (This is some-what irrelevant but worth mentioning)
+- [X] Environment: Ubuntu 16.04 (This is some-what irrelevant but worth mentioning)
 
-### Python 3
+- [X]  Python 3
 
-### - [X]  tqdm
-- [ ] ### tqdm
+- [X]  tqdm
 ```
 pip3 install tqdm
 ```
 
-### youtube-dl
+- [X] youtube-dl
 ```
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
 sudo chmod a+rx /usr/local/bin/youtube-dl
 ```
 
-### ffmpeg
+- [X] ffmpeg
 ```
 sudo add-apt-repository ppa:jonathonf/ffmpeg-4
 sudo apt-get update
