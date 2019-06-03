@@ -31,6 +31,8 @@ Purpose:	Manage kinetics dataset according to author guidelines
 
 * Download dataset from https://deepmind.com/research/open-source/open-source-datasets/kinetics/
 
+Please read this: https://arxiv.org/pdf/1808.01340.pdf
+
 
 REFS:
 https://www.ostechnix.com/20-ffmpeg-commands-beginners/
