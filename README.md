@@ -4,7 +4,7 @@ Kinetics-600 is a large-scale high-quality dataset of YouTube video URLs which i
 
 # Warn·ing! This scrip is not without bugs!
 
-This script downloads the Kinetics-600 dataset according to author guidelines at https://deepmind.com/research/open-source/open-source-datasets/kinetics/. The original paper can be found at https://arxiv.org/pdf/1705.06950.pdf. This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube.
+This script downloads the Kinetics-600 dataset according to author guidelines at https://arxiv.org/pdf/1808.01340.pdf. The original work is from https://deepmind.com/research/open-source/open-source-datasets/kinetics/. The original paper can be found at https://arxiv.org/pdf/1705.06950.pdf. This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube.
 
 # Pre·req·ui·sites ( dependencies )
 
