@@ -26,7 +26,7 @@ SOFTWARE.
 Author:		Rockson Agyeman and Gyu Sang Choi
 Date: 		2019.05.27
 Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
-Version:	1.0.0
+Version:	1.1.0
 Purpose:	Manage kinetics dataset according to author guidelines
 
 * Download dataset from https://deepmind.com/research/open-source/open-source-datasets/kinetics/
