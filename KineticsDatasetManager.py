@@ -42,7 +42,6 @@ import os, sys
 from natsort import natsorted
 from tqdm import tqdm as tqdm
 import shutil
-from pytube import YouTube
 
 
 # Class begins
