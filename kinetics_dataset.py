@@ -26,8 +26,11 @@ SOFTWARE.
 Authors:	Rockson Agyeman and Gyu Sang Choi
 Date: 		2019.05.23
 Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
-Version:	1.0.0
-Purpose:	Download Kinetics-600 dataset according to the author guidelines
+Version:	1.1.0
+Purpose:	-- More later --
+
+Usage: python kinetics_dataset.py -t [train, validation, test] -d ~/Documents/datasets/kinetics_dataset/
+
 """
 
 import argparse
@@ -47,9 +50,6 @@ if __name__ == "__main__":
 	kinetics_manager = KineticsDatasetManager(args["destination"],args["type"])
 
 	kinetics_manager.download_video()
-
-
-
 
 
 
