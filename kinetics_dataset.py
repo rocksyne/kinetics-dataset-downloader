@@ -29,7 +29,7 @@ Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
 Version:	1.1.0
 Purpose:	-- More later --
 
-Usage: python kinetics_dataset.py -t [train, validation, test] -d ~/Documents/datasets/kinetics_dataset/
+Usage: python kinetics_dataset.py -t [train, validate, test] -d ~/Documents/datasets/kinetics_dataset/
 
 """
 
