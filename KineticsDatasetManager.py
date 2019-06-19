@@ -106,14 +106,10 @@ class KineticsDatasetManager(object):
 	# return the list of all split files in the dir that
 	# that matches the split version number
 	"""
-		This code will need some working on. For now we are not able to download only a component the youtube datase
-		So what we shall do is, download each video and use post processing to crop out the part of the video we need
-		Thats just the hard way out for now
-
-		-- To do --
+		Download only the segment of the video that we need.
 		[ref: https://github.com/ytdl-org/youtube-dl/issues/622#issuecomment-162337869]
 	"""
-	# provide range of downloads. Default is everything
+	# provide range of downloads. Default: everything
 	def download_video(self,start_from=1,end_at=-1):
 
 		# lets make sure that the range we are providin
@@ -289,6 +285,7 @@ class KineticsDatasetManager(object):
 				coumn = str(line).split(",")
 
 				# there is no label for holdout data
+				# so we create a fake label --todo: find another approach later.
 				if self.dataset_type == "holdout":
 					data_lable = "all_data"
 					youtube_id = coumn[0]
