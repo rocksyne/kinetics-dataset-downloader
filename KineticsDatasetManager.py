@@ -26,10 +26,16 @@ SOFTWARE.
 Author:		Rockson Agyeman and Gyu Sang Choi
 Date: 		2019.05.27
 Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
-Version:	1.1.0
+Version:	1.2.0
 Purpose:	Manage kinetics dataset according to author guidelines
 
 * Download dataset from https://deepmind.com/research/open-source/open-source-datasets/kinetics/
+
+Changes:
+		V 1.0.0 - Beta application
+		V 1.0.1 - Stable release
+		V 1.1.0 - Added ability to download range of videos
+		V 1.2.0 - Added: Check if video already exist. If it does, skip
 
 
 REFS:
@@ -308,16 +314,19 @@ class KineticsDatasetManager(object):
 				vid_name = "vid_"+youtube_id+".avi"
 				vid_path = os.path.join(dir_name,vid_name)
 
-				# create the youtube link
-				youtube_link = "https://www.youtube.com/watch?v="+youtube_id
+				# if the video does not exist, then download it
+				if os.path.exists(vid_path) is False:
+
+					# create the youtube link
+					youtube_link = "https://www.youtube.com/watch?v="+youtube_id
 				
+					# use youtube-dl and ffmpeg to download videos
+					os.system("ffmpeg -hide_banner -ss "+start_time+" -i $(youtube-dl -f 18 --get-url "+youtube_link+") -t 10 -c:v copy -c:a copy "+vid_path)
+					video_counter +=1
+					print(video_counter, " videos download")
 				
-				# use youtube-dl and ffmpeg to download videos
-				os.system("ffmpeg -hide_banner -ss "+start_time+" -i $(youtube-dl -f 18 --get-url "+youtube_link+") -t 10 -c:v copy -c:a copy "+vid_path)
-				video_counter +=1
-				print(video_counter, " videos download")
-				
-				
-				#print("vide path: ",vid_path)
+				# else skip it and just let me know
+				else:
+					print("Skipped: ",vid_path)		
 			
 
