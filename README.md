@@ -2,7 +2,7 @@
 
 Kinetics-600 is a large-scale high-quality dataset of YouTube video URLs which include a diverse range of human focused actions.
 
-# Warn·ing! This scrip comes with no warranty!
+# Warn·ing! This work comes with no warranty!
 
 This script downloads the Kinetics-600 dataset according to author guidelines at https://arxiv.org/pdf/1808.01340.pdf. The original work is from https://deepmind.com/research/open-source/open-source-datasets/kinetics/. The original paper can be found at https://arxiv.org/pdf/1705.06950.pdf. This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube.
 
