@@ -20,26 +20,36 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-"""
 
-"""
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOME MORE INFO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 Author:		Rockson Agyeman and Gyu Sang Choi
-Date: 		2019.05.27
+Date: 		2019.05.27 (First Authored)
 Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
-Version:	1.2.0
-Purpose:	Manage kinetics dataset according to author guidelines
+Version:	1.2.0 (Current)
+Purpose:	Manage daownload of kinetics dataset according to author guidelines
 
 * Download dataset from https://deepmind.com/research/open-source/open-source-datasets/kinetics/
 
-Changes:
-		V 1.0.0 - Beta application
-		V 1.0.1 - Stable release
-		V 1.1.0 - Added ability to download range of videos
-		V 1.2.0 - Added: Check if video already exist. If it does, skip
+
+Version Changes:
+----------------
+				V 1.0.0 - Beta application
+				V 1.0.1 - Stable release
+				V 1.1.0 - Added: ability to download videos from a range of classes or from one class
+				V 1.2.0 - Added: Check if video already exist. If it does, skip
+				V 1.3.0 - Debuged: Provided quotatio marks to cater for file or folder names with special characters such
+								   as white space and (). Without this quotation mark, folders had to be created with all 
+								   white spaces replaced with _ before ffmpeg considered it to be a valid string 
+								   Another flaw was that folder names with () in them were considered invalid strings,
+								   thus, were not download.  
 
 
 REFS:
 https://www.ostechnix.com/20-ffmpeg-commands-beginners/
+https://stackoverflow.com/q/22766111/3901871
+https://ffmpeg.org/ffmpeg-utils.html#toc-Examples
 """
 
 
@@ -106,10 +116,14 @@ class KineticsDatasetManager(object):
 	# return the list of all split files in the dir that
 	# that matches the split version number
 	"""
-		Download only the segment of the video that we need.
+		This code will need some working on. For now we are not able to download only a component the youtube datase
+		So what we shall do is, download each video and use post processing to crop out the part of the video we need
+		Thats just the hard way out for now
+
+		-- To do --
 		[ref: https://github.com/ytdl-org/youtube-dl/issues/622#issuecomment-162337869]
 	"""
-	# provide range of downloads. Default: everything
+	# provide range of downloads. Default is everything
 	def download_video(self,start_from=1,end_at=-1):
 
 		# lets make sure that the range we are providin
@@ -218,7 +232,7 @@ class KineticsDatasetManager(object):
 		print()
 
 		# now some validation
-		# trom out all spaces
+		# trim out all spaces
 		user_input = user_input.replace(" ","")
 
 		# now check to see if a single number is given or a range is provided
@@ -285,7 +299,6 @@ class KineticsDatasetManager(object):
 				coumn = str(line).split(",")
 
 				# there is no label for holdout data
-				# so we create a fake label --todo: find another approach later.
 				if self.dataset_type == "holdout":
 					data_lable = "all_data"
 					youtube_id = coumn[0]
@@ -295,12 +308,9 @@ class KineticsDatasetManager(object):
 					data_lable = coumn[0]
 					youtube_id = coumn[1]
 					start_time = coumn[2]
-					
-
 				
 				# create the directory according to the label name
-				dir_name = str(data_lable).replace(" ","_") # replace space with underscore
-				dir_name = os.path.join(self.destination_path,dir_name) # make it an absolute path
+				dir_name = os.path.join(self.destination_path,str(data_lable)) # make it an absolute path
 
 				# if the directory does not already exist
 				# then create a new one
@@ -311,6 +321,7 @@ class KineticsDatasetManager(object):
 				vid_name = "vid_"+youtube_id+".avi"
 				vid_path = os.path.join(dir_name,vid_name)
 
+
 				# if the video does not exist, then download it
 				if os.path.exists(vid_path) is False:
 
@@ -318,12 +329,13 @@ class KineticsDatasetManager(object):
 					youtube_link = "https://www.youtube.com/watch?v="+youtube_id
 				
 					# use youtube-dl and ffmpeg to download videos
-					os.system("ffmpeg -hide_banner -ss "+start_time+" -i $(youtube-dl -f 18 --get-url "+youtube_link+") -t 10 -c:v copy -c:a copy "+vid_path)
+					# use quotation to cater for special charaters such as whitesspace and () in file or folder name
+					# REF: https://stackoverflow.com/q/22766111/3901871
+					# REF: zsnhttps://ffmpeg.org/ffmpeg-utils.html#toc-Examples
+					os.system("ffmpeg -hide_banner -ss "+start_time+" -i $(youtube-dl -f 18 --get-url "+youtube_link+") -t 10 -c:v copy -c:a copy '"+vid_path+"'")
 					video_counter +=1
-					print(video_counter, " videos download")
-				
-				# else skip it and just let me know
+					print(video_counter, " videos downloaded")
+					
 				else:
 					print("Skipped: ",vid_path)		
-			
 
