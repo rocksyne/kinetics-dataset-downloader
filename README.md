@@ -1,10 +1,10 @@
 # Kinetics Dataset Downloader
 
-Kinetics-600 is a large-scale high-quality dataset of YouTube video URLs which include a diverse range of human focused actions.
+Kinetics-400/600/700 is a large-scale high-quality dataset of YouTube video URLs which include a diverse range of human focused actions.
 
 # Warn·ing! This work comes with no warranty!
 
-This script downloads the Kinetics-600 dataset according to author guidelines at https://arxiv.org/pdf/1808.01340.pdf. The original work is from https://deepmind.com/research/open-source/open-source-datasets/kinetics/. The original paper can be found at https://arxiv.org/pdf/1705.06950.pdf. This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube.
+This script downloads the Kinetics-400, 600 or 700 dataset according to author guidelines at https://arxiv.org/pdf/1808.01340.pdf. The original work is from https://deepmind.com/research/open-source/kinetics. The original paper can be found at https://arxiv.org/pdf/1705.06950.pdf. This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube or be restricted because of copyright issues.
 
 # Pre·req·ui·sites ( dependencies )
 
@@ -32,7 +32,7 @@ sudo apt-get install ffmpeg
 
 # Us·age
 ```
-python kinetics_dataset.py -t [data_set_categoty] -d [destination_to_where_videos_should_be_downloaded_to]
+Usage: python kinetics_dataset.py -v 400 -t [train / validate / test] -d ~/Documents/datasets/kinetics_dataset/
 ```
 eg. python kinetics_dataset.py -t train -d ~/Documents/Kinetics_dataset
 
