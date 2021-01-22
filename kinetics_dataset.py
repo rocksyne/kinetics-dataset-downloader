@@ -30,7 +30,7 @@ Version:	1.2.0
 Purpose:	Download Kinetics dataset (400,600 or 700) according to specifications from
 		https://deepmind.com/research/open-source/kinetics
 
-Usage: python kinetics_dataset.py -v 400 -t [train / validate / test] -d ~/Documents/datasets/kinetics_dataset/
+Usage: python kinetics_dataset.py -v [400 / 600 / 700] -t [train / validate / test] -d ~/Documents/datasets/kinetics_dataset/
 
 """
 
