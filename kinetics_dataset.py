@@ -26,10 +26,10 @@ SOFTWARE.
 Authors:	Rockson Agyeman and Gyu Sang Choi
 Date: 		2019.05.23
 Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
-Version:	1.1.0
+Version:	1.2.0
 Purpose:	-- More later --
 
-Usage: python kinetics_dataset.py -t [train, validate, test] -d ~/Documents/datasets/kinetics_dataset/
+Usage: python kinetics_dataset.py -v 400 -t [train / validate / test] -d ~/Documents/datasets/kinetics_dataset/
 
 """
 
@@ -40,14 +40,16 @@ from KineticsDatasetManager import KineticsDatasetManager
 # start the application
 if __name__ == "__main__":
 	
-	# construct the argument parse and parse the arguments
+	# construct the parse arguments
 	ap = argparse.ArgumentParser()
-	ap.add_argument("-d", "--destination", type=str, default=None, help="Enter destination of where files should be extracted to")
-	ap.add_argument("-t", "--type", type=str, required=True, default=None, help="Enter train, validation or test")
+	ap.add_argument("-v", "--version", type=str, required=True, default=None, help="Enter the version to download, eg. 400, 600 or 700")
+	ap.add_argument("-t", "--type", type=str, required=True, default=None, help="Enter the split type, eg. train, validation or test")
+	ap.add_argument("-d", "--destination", type=str, default=None, help="Enter destination for download videos")
+	
 	args = vars(ap.parse_args())
 
-	# instantiate the manager class
-	kinetics_manager = KineticsDatasetManager(args["destination"],args["type"])
+	# instantiate the download manager class
+	kinetics_manager = KineticsDatasetManager(args["version"],args["type"],args["destination"],False)
 
 	kinetics_manager.download_video()
 
