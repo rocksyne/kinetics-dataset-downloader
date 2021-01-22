@@ -27,11 +27,14 @@ SOFTWARE.
 Author:		Rockson Agyeman and Gyu Sang Choi
 Date: 		2019.05.27 (First Authored)
 Email:		rocksyne@gmail.com, castchoi@ynu.ac.kr
-Version:	1.2.0 (Current)
+Version:	1.4.0 (Current)
 Purpose:	Manage daownload of kinetics dataset according to author guidelines
 
-* Download dataset from https://deepmind.com/research/open-source/open-source-datasets/kinetics/
+* Download dataset annotations from 
+	https://deepmind.com/research/open-source/kinetics
+	Link updated on 2021.01.21
 
+						
 
 Version Changes:
 ----------------
@@ -43,181 +46,135 @@ Version Changes:
 								   as white space and (). Without this quotation mark, folders had to be created with all 
 								   white spaces replaced with _ before ffmpeg considered it to be a valid string 
 								   Another flaw was that folder names with () in them were considered invalid strings,
-								   thus, were not download.  
+								   thus, were not download. 
+				V 1.4.0 (2021.01.21) - Download capability for Kinetics 400 and 700 also
+									 - Disable logs from ffmpeg operations
+									 - House cleaning on the annotations according to https://deepmind.com/research/open-source/kinetics
 
 
-REFS:
-https://www.ostechnix.com/20-ffmpeg-commands-beginners/
-https://stackoverflow.com/q/22766111/3901871
-https://ffmpeg.org/ffmpeg-utils.html#toc-Examples
+References:
+	https://www.ostechnix.com/20-ffmpeg-commands-beginners/
+	https://stackoverflow.com/q/22766111/3901871
+	https://ffmpeg.org/ffmpeg-utils.html#toc-Examples
 """
 
 
-# import the libraries we need
+# import needed libraries
 import os, sys
 from natsort import natsorted
 from tqdm import tqdm as tqdm
 import shutil
+from collections import Counter
 
 
-# Class begins
+# Download manager class
 class KineticsDatasetManager(object):
 
 	# constructor
-	def __init__(self,destination_path=None,dataset_type=None):
+	def __init__(self,version=None,split_type=None,destination_path=None,show_log=False):
 		
-		self.destination_path = destination_path
-		self.dataset_type = str(dataset_type).lower()
+		self.destination_path = str(destination_path).strip()
+		self.split_type = str(split_type).lower().strip()
+		self.version = str(version).strip()
+		self.allowed_split_type = ["train","test","validate"]
+		self.allowed_version_number = ["400","600","700"]
+		self.show_log = show_log
+		self.show_log_cmd = "-loglevel quiet"
 
-		# the dataset type can never be empty
-		if self.dataset_type is None:
-			sys.exit("Please provide the category of dataset [train,validate,test] ")
+		if self.show_log is True:
+			self.show_log_cmd = ""
 
+		# check the version of the Kinetics to be downloaded. only 3 versions allowed ()
+		if (self.version is None) or (self.version not in self.allowed_version_number):
+			sys.exit("Please select your kinetics version. Eg, 400, 600 or 700")
 
-		# we need to make sure that the destination path really exists
-		# if it doesnt, we will need to create a temp one in this current working dir
+		# check the split verions of the Kinetics to be downloaded. only 3 versions allowed
+		if (self.split_type is None) or (self.split_type not in self.allowed_split_type):
+			sys.exit("Please provide the split category of the dataset [train,validate,test] ")
+
+		# Making sure the destination path has been provided
+		# If not, create a temporary one in this current working directory
 		if self.destination_path is None:
-			self.destination_path = os.path.join(os.getcwd(),"Kinetics_dataset",str(dataset_type))
+			self.destination_path = os.path.join(os.getcwd(),"Kinetics_dataset",str(self.split_type))
 			print("")
 			print("Destination directory defaulted to '",self.destination_path,"'")
 			print("")
 
-		else: self.destination_path = os.path.join(self.destination_path,str(dataset_type))
+		else: self.destination_path = os.path.join(self.destination_path,str(self.split_type))
 
 
-		# chek if destination exists. if it does, delete and create new one
+		# Some house cleaning
+		# check if destination dir exists. 
+		# if it does, prompt user to delete and create new one
 		if os.path.exists(self.destination_path):
-			user_input = input("Destination path '{}' already exists. Do you want to delete and recreate it? y or n: ".format(self.destination_path))
+			print("")
+			user_input = input("Destination path '{}' already exists. Do you want to delete and re-create it? y or n: ".format(self.destination_path))
 			print("")
 
 			if str(user_input).lower() == 'y':
+				print("")
 				print("Deleting and re-creating {}...".format(self.destination_path))
 				print("")
 				shutil.rmtree(self.destination_path)
 				os.makedirs(self.destination_path)
 
 			elif str(user_input).lower() == 'n':
+				print("")
 				print("Keeping '{}' as the default...".format(self.destination_path))
 				print("")
 
 			else:
+				print("")
 				print("Invalid {} option. Program exiting!".format(user_input))
+				print("")
 				sys.exit()
 
 		else:
 			os.makedirs(self.destination_path)
 			print("")
-			print("Destination path '{}' created successfully!".format(self.destination_path))
+			print("Destination path '<{}>' was created successfully!".format(self.destination_path))
 			print("")
 	
 
 
 
-	# return the list of all split files in the dir that
-	# that matches the split version number
-	"""
-		This code will need some working on. For now we are not able to download only a component the youtube datase
-		So what we shall do is, download each video and use post processing to crop out the part of the video we need
-		Thats just the hard way out for now
-
-		-- To do --
-		[ref: https://github.com/ytdl-org/youtube-dl/issues/622#issuecomment-162337869]
-	"""
 	# provide range of downloads. Default is everything
 	def download_video(self,start_from=1,end_at=-1):
 
-		# lets make sure that the range we are providin
-		# this code needs cleaning. kindly make a pull request if you can help
-		def download_data_range(csv_location: str, dataset_type: str) -> dict:
+		# fetch the list of of videos from the list of csv files
+		def fetch_video_list(csv_location: str) -> list:
 			with open(csv_location,"r") as opened_csv:
 				lines = opened_csv.readlines()
 				lines = [line.rstrip('\n') for line in lines]
 				lines = lines[1:] # trim out the label
+				all_data = lines
+
+				lines = [line.split(",")[0] for line in lines] # get all the labels
+
+				print("")
+				print("List of classes available in Kinetics{} {} split dataset".format(self.version,self.split_type))
+				print("------------------------------------------------------------------")
 
 
-				# hold out dataset does not have labelling
-				# so we need to be careful about
-				if dataset_type!="holdout":
-					lines = [line.split(",")[0] for line in lines] # get all the labels
+				lines = Counter(lines)
+				labels = natsorted(lines)
 
-					print("List of data set classes available for download")
-					print("-----------------------------------------------")
-					print("")
-					# now create a dictionary of the
-					# first element
-					indexing_holder = {}
-					start_point = end_point =  0
-					unique_element_counter = 1
-					for index_,element_ in enumerate(lines[:]):
-						
-						# variable to hold the last previous element
-						previous_element = lines[index_-1]
+				for count,label in enumerate(labels,start=1):
+					print("{}. {} ({:,d} videos)".format(count,str(label).upper(),lines[label]))
 
-						# however, if this is the first element, then previous = first
-						if index_ == 0:
-							previous_element = lines[0]
+				# return the unique labels 
+				# and all the data fetched as well
+				return labels,all_data
 
-						# if this curent element is the same as the previous one
-						# extend the end point
-						if lines[index_] == previous_element:
-							end_point = index_
+		# -- function ends here
+		
 
-							# if we have reached the last element in the the array, 
-							# then set the stop point at this index
-							if index_ == (len(lines)-1): 
-								end_point = index_
-								print(unique_element_counter,". ",lines[index_])
+		# get the annotation file
+		csv_location = "./dataset_splits/kinetics"+str(self.version)+"/"+str(self.split_type)+".csv"
 
-								# dictionary format: [id] ---> saves [class_name,index_start_point,index_end_point]
-								indexing_holder[unique_element_counter] = [lines[index_],start_point,end_point] # store the values in a dictionary
-								unique_element_counter +=1
-
-						# else if the curent element is different from the previous
-						# then let this index be the starting point of the new bath and
-						# let the prevoius index be the stop point of the previous batch 
-						else:
-							#print(lines[index_-1]," {} - {}".format(start_point,end_point ))
-							element_ = lines[index_-1]
-							end_point = index_-1
-							print(unique_element_counter,". ",element_)
-
-							# dictionary format: [id] ---> saves [class_name,index_start_point,index_end_point]
-							indexing_holder[unique_element_counter] = [element_,start_point,end_point]
-							unique_element_counter +=1
-							start_point = index_
-
-					# pretty printing
-					print("")
-
-					# return the dictionary
-					return indexing_holder
-
-				# -- to do: implement for when downloading holdout dataset
-				else:
-					sys.exit("holdout data set has not been implemented yet")
-							
-			# -- END --
-
-
-
-		if self.dataset_type == "train":
-			csv_location = "./dataset_splits/kinetics_600/kinetics_train.csv"
-
-		elif self.dataset_type == "validate":
-			csv_location = "./dataset_splits/kinetics_600/kinetics_val.csv"
-
-		elif self.dataset_type == "test":
-			csv_location = "./dataset_splits/kinetics_600/kinetics_600_test.csv"
-
-		elif self.dataset_type == "holdout":
-			csv_location = "./dataset_splits/kinetics_600/kinetics_600_holdout_test.csv"
-
-		else:
-			sys.exit("Invalid dataset category type. Please enter [train,validate,test]")
-
-
-		download_data_range = download_data_range(csv_location,self.dataset_type)
-
+		# get the unique labels as well as all the data
+		labels, all_data = fetch_video_list(csv_location)
+		classes_to_be_downloaded = []
 
 
 		"""
@@ -228,8 +185,9 @@ class KineticsDatasetManager(object):
 		"""
 
 		# ask user to enter the range of the dataset they want to download
-		user_input = str(input("Please choose a range of the dataset classes you want to download, eg. 1 or 1-100: "))
-		print()
+		print("")
+		user_input = str(input("Please choose a range of the dataset classes you want to download, eg. 1 or 1-{}: ".format(str(len(labels)))))
+		print("")
 
 		# now some validation
 		# trim out all spaces
@@ -238,104 +196,91 @@ class KineticsDatasetManager(object):
 		# now check to see if a single number is given or a range is provided
 		user_input = user_input.split("-")
 
-		#print(user_input)
-
 		if len(user_input)>2:
-			sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-100. Program will exit now")
+			sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-"+str(len(labels))+". Program will exit now")
 
 
 		elif len(user_input)==1:
 			if isinstance(int(user_input[0]), (int)) is False or user_input[0]=='':
-				sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-100. Program exiting now")
+				sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-"+str(len(labels))+". Program exiting now")
 
-			user_input = int(user_input[0])
+			else:
+				val = int(user_input[0])
 
-			# ensure the right range
-			if user_input<=0 or user_input>len(download_data_range):
-				sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-100. Program exiting now")
+				# ensure the right range
+				if val<=0 or val>len(labels):
+					sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-"+str(len(labels))+". Program exiting now")
 
-
-			start_from = download_data_range[user_input][1]
-			end_at = download_data_range[user_input][2]+1
-			print("Downloading videos of '{}' only.".format(download_data_range[user_input][0]))
-			#print(start_from, " --> ",end_at  )
-			print("")
+				classes_to_be_downloaded = labels[val-1:val]
+				print("Downloading videos from the '{}' class only.".format(str(classes_to_be_downloaded[0]).upper()))
+				print("")
 
 
 		elif len(user_input)==2:
 			if isinstance(int(user_input[0]), (int)) is False or isinstance(int(user_input[1]), (int)) is False or user_input[0]=='' or user_input[1]=='':
-				sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-100. Program exiting now")
+				sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-"+str(len(labels))+". Program exiting now")
 
-			from_class = int(user_input[0])
-			to_class = int(user_input[1])
+			else:
+				from_class = int(user_input[0])
+				to_class = int(user_input[1])
 
-			# ensure the right range
-			if from_class>=to_class or from_class<=0 or to_class<=0 or from_class>len(download_data_range) or to_class>len(download_data_range):
-				sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-100. Program exiting now")
+				# ensure the right range
+				if from_class>=to_class or from_class<=0 or to_class<=0 or from_class>len(labels) or to_class>len(labels):
+					sys.exit("Sorry. Please provide the correct range such as eg. 1 or 1-"+str(len(labels))+". Program exiting now")
 
 
-			start_from = download_data_range[from_class][1]
-			end_at = download_data_range[to_class][2]+1
-			print("Downloading videos from class '{}' to '{}'".format(download_data_range[from_class][0],download_data_range[to_class][0]))
-			#print(start_from, " --> ",end_at  )
-			print("")
+				classes_to_be_downloaded = labels[from_class-1:to_class]
+				print("Downloading videos from class '{}' to '{}'".format(classes_to_be_downloaded[0],classes_to_be_downloaded[-1]))
+			
+				
 
 
 		#number may not be right but just give us a rough estimate	
 		video_counter = 0
 
-		# open the file
-		with open(csv_location,"r") as opened_csv:
-			lines = opened_csv.readlines()
-			lines = [line.rstrip('\n') for line in lines]
+		# this needs cleaning
+		# select the candidates for downloading
+		candidates = []
+		for data in all_data:
+			data_lable = str(data).strip().split(',')[0]
 
-			# since the first line is just headings,
-			# we will chop that part off
-			lines = lines[1:]
-			sp = "./"
+			if data_lable in classes_to_be_downloaded:
+				candidates.append(data)
 
-			# loop through the lines to downlad the videos
-			for line in tqdm(lines[start_from:end_at]):
-				coumn = str(line).split(",")
-
-				# there is no label for holdout data
-				if self.dataset_type == "holdout":
-					data_lable = "all_data"
-					youtube_id = coumn[0]
-					start_time = coumn[1]
-
-				else:
-					data_lable = coumn[0]
-					youtube_id = coumn[1]
-					start_time = coumn[2]
 				
-				# create the directory according to the label name
-				dir_name = os.path.join(self.destination_path,str(data_lable)) # make it an absolute path
 
-				# if the directory does not already exist
-				# then create a new one
-				if os.path.exists(dir_name) is False:
-					os.makedirs(dir_name)
+		# # download the candidate videos
+		for candidate in tqdm(candidates):
 
-				# sample video name
-				vid_name = "vid_"+youtube_id+".avi"
-				vid_path = os.path.join(dir_name,vid_name)
+			data_lable = str(candidate).strip().split(',')[0]
+			youtube_id = str(candidate).strip().split(',')[1]
+			start_time = str(candidate).strip().split(',')[2]
 
+			# create the directory according to the label name
+			dir_name = os.path.join(self.destination_path,str(data_lable)) # make it an absolute path
 
-				# if the video does not exist, then download it
-				if os.path.exists(vid_path) is False:
+			# if the directory does not already exist
+			# then create a new one
+			if os.path.exists(dir_name) is False:
+				os.makedirs(dir_name)
 
-					# create the youtube link
-					youtube_link = "https://www.youtube.com/watch?v="+youtube_id
+			# sample video name
+			vid_name = "vid_"+youtube_id+".avi"
+			vid_path = os.path.join(dir_name,vid_name)
+
+			# if the video does not exist, then download it
+			if os.path.exists(vid_path) is False:
+
+				# create the youtube link
+				youtube_link = "https://www.youtube.com/watch?v="+youtube_id
+			
+				# use youtube-dl and ffmpeg to download videos
+				# use quotation to cater for special charaters such as whitesspace and () in file or folder name
+				# REF: https://stackoverflow.com/q/22766111/3901871
+				# REF: zsnhttps://ffmpeg.org/ffmpeg-utils.html#toc-Examples
+				os.system("ffmpeg "+self.show_log_cmd+" -ss "+start_time+" -i $(youtube-dl -f 18 --get-url "+youtube_link+") -t 10 -c:v copy -c:a copy '"+vid_path+"'")
+				video_counter +=1
 				
-					# use youtube-dl and ffmpeg to download videos
-					# use quotation to cater for special charaters such as whitesspace and () in file or folder name
-					# REF: https://stackoverflow.com/q/22766111/3901871
-					# REF: zsnhttps://ffmpeg.org/ffmpeg-utils.html#toc-Examples
-					os.system("ffmpeg -hide_banner -ss "+start_time+" -i $(youtube-dl -f 18 --get-url "+youtube_link+") -t 10 -c:v copy -c:a copy '"+vid_path+"'")
-					video_counter +=1
-					print(video_counter, " videos downloaded")
-					
-				else:
-					print("Skipped: ",vid_path)		
+			else:
+				print("Skipped: ",vid_path)		
 
