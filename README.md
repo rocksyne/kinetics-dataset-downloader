@@ -4,7 +4,7 @@ Kinetics-400/600/700 is a large-scale high-quality dataset of YouTube video URLs
 
 # Warn·ing! This work comes with no warranty!
 
-This script downloads the Kinetics-400, 600 or 700 dataset according to author guidelines at https://arxiv.org/pdf/1808.01340.pdf. The original work is from https://deepmind.com/research/open-source/kinetics. The original paper can be found at https://arxiv.org/pdf/1705.06950.pdf. This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube or be restricted because of copyright issues.
+This script downloads the Kinetics-400, 600 or 700 dataset according to author guidelines at https://deepmind.com/research/open-source/kinetics. The original paper can be found at https://arxiv.org/pdf/1705.06950.pdf. This script downloads only ~10 second long clips using the provided youtube video ID. Some videos may be absent because they may have been taken off YouTube or be restricted because of copyright issues.
 
 # Pre·req·ui·sites ( dependencies )
 
