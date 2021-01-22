@@ -1,6 +1,6 @@
 # Kinetics Dataset Downloader
 
-Kinetics-400/600/700 is a large-scale high-quality dataset of YouTube video URLs which include a diverse range of human focused actions.
+Kinetics-400/600/700 is a large-scale high-quality dataset of YouTube video URLs which includes a diverse range of human focused actions.
 
 # Warn·ing! This work comes with no warranty!
 
