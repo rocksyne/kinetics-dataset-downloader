@@ -35,7 +35,7 @@ sudo apt-get install ffmpeg
 
 # Us·age
 ```
-Usage: python kinetics_dataset.py -v [400 / 600 / 700] -t [train / validate / test] -d ~/Documents/datasets/kinetics_dataset/
+python kinetics_dataset.py -v [400 / 600 / 700] -t [train / validate / test] -d ~/Documents/datasets/kinetics_dataset/
 ```
 eg. python kinetics_dataset.py -t train -d ~/Documents/Kinetics_dataset
 
