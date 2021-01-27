@@ -37,7 +37,7 @@ sudo apt-get install ffmpeg
 ```
 python kinetics_dataset.py -v [400 / 600 / 700] -t [train / validate / test] -d ~/Documents/datasets/kinetics_dataset/
 ```
-eg. python kinetics_dataset.py -t train -d ~/Documents/Kinetics_dataset
+eg. python kinetics_dataset.py -v 400 -t train -d ~/Documents/Kinetics_dataset
 
 Command Line Parameters
 * `-v`: The version of the Kinetics dataset to be downloaded, Kinetics400,Kinetics600 or Kinetics700
